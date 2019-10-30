@@ -1,0 +1,23 @@
+{
+  "name": "next-circular-dependency",
+  "description": "Detect circular dependencies in your Next.js app",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": "tiaanduplessis/next-circular-dependency",
+  "scripts": {
+    "lint": "standard --fix index.js"
+  },
+  "keywords": [
+    "next",
+    "nextjs",
+    "circular-dependency",
+    "circular-dependency-plugin"
+  ],
+  "dependencies": {
+    "circular-dependency-plugin": "^5.2.0"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
+  }
+}
