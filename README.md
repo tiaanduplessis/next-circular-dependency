@@ -10,20 +10,10 @@
 
 ## Table of Contents
 
-- [About](#about)
-- [Features](#features)
 - [Usage](#usage)
 - [Install](#install)
 - [Contribute](#contribute)
 - [License](#License)
-
-## About
-
-Explain the problem the package is trying to solve.
-
-## Features
-
-- Name key features e.g. size, performance, how it differs from similar solutions etc.
 
 ## Usage
 
