@@ -6,7 +6,8 @@
   "main": "index.js",
   "repository": "tiaanduplessis/next-circular-dependency",
   "scripts": {
-    "lint": "standard --fix index.js"
+    "lint": "standard index.js test.js",
+    "test": "node test.js"
   },
   "keywords": [
     "next",

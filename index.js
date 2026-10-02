@@ -1,18 +1,24 @@
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
-module.exports = (nextConfig = {}) => {
+const createWrapper = (pluginOptions, legacy = false) => (nextConfig = {}) => {
   return Object.assign({}, nextConfig, {
     webpack (config, options) {
-      nextConfig = Object.assign({
-        exclude: new RegExp('$^'),
-        include: new RegExp('.*'),
+      const circularOptions = Object.assign({
+        exclude: /$^/,
+        include: /.*/,
         failOnError: !options.dev,
         allowAsyncCycles: false,
         cwd: process.cwd(),
         onStart: undefined,
         onDetected: undefined,
         onEnd: undefined
-      }, nextConfig)
+      }, pluginOptions)
+
+      if (legacy) {
+        // Preserve the original hook receiver and its state between builds.
+        nextConfig = circularOptions
+        pluginOptions = circularOptions
+      }
 
       if (!options.defaultLoaders) {
         throw new Error(
@@ -23,14 +29,14 @@ module.exports = (nextConfig = {}) => {
       config.plugins = [
         ...config.plugins,
         new CircularDependencyPlugin({
-          exclude: nextConfig.exclude,
-          include: nextConfig.include,
-          failOnError: nextConfig.failOnError,
-          allowAsyncCycles: nextConfig.allowAsyncCycles,
-          cwd: nextConfig.cwd,
-          onStart: nextConfig.onStart,
-          onDetected: nextConfig.onDetected,
-          onEnd: nextConfig.onEnd
+          exclude: circularOptions.exclude,
+          include: circularOptions.include,
+          failOnError: circularOptions.failOnError,
+          allowAsyncCycles: circularOptions.allowAsyncCycles,
+          cwd: circularOptions.cwd,
+          onStart: circularOptions.onStart,
+          onDetected: circularOptions.onDetected,
+          onEnd: circularOptions.onEnd
         })
       ]
 
@@ -42,3 +48,7 @@ module.exports = (nextConfig = {}) => {
     }
   })
 }
+
+// Keep the original one-call API for existing next.config.js files.
+module.exports = (nextConfig = {}) => createWrapper(nextConfig, true)(nextConfig)
+module.exports.withOptions = (pluginOptions = {}) => createWrapper(pluginOptions)
