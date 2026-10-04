@@ -6,8 +6,10 @@
   "main": "index.js",
   "repository": "tiaanduplessis/next-circular-dependency",
   "scripts": {
-    "lint": "standard index.js test.js",
-    "test": "node test.js"
+    "lint": "eslint index.js test.js eslint.config.mjs --max-warnings=0",
+    "test": "node test.js",
+    "check": "npm run lint && npm test",
+    "format": "npm run lint -- --fix"
   },
   "keywords": [
     "next",
@@ -19,6 +21,8 @@
     "circular-dependency-plugin": "^5.2.0"
   },
   "devDependencies": {
-    "standard": "^14.3.1"
+    "@eslint/js": "10.0.1",
+    "@stylistic/eslint-plugin": "5.10.0",
+    "eslint": "10.12.0"
   }
 }
