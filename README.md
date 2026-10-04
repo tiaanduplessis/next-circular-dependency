@@ -143,3 +143,34 @@ Run `npm test` and `npm run lint` before submitting changes.
 ## License
 
 MIT
+
+## Development
+
+The runtime and the assertion-based test suite are CommonJS. Run `npm test` to execute the 35 API and real-plugin hook tests. This command has no lint pretest hook and does not require the modern development linter.
+
+For contributor checks, use Node.js `^20.19.0 || ^22.13.0 || >=24` and Yarn Classic:
+
+```sh
+yarn install --frozen-lockfile --ignore-scripts --ignore-optional
+npm run check
+```
+
+`npm run lint` checks `index.js`, `test.js` and `eslint.config.mjs` without changing them. `npm run check` runs lint followed by the tests. `npm run format` explicitly applies lint fixes. The development Node requirement does not add an `engines` restriction or change the package's runtime support contract.
+
+### Lint policy
+
+ESLint 10 and ESLint Stylistic replace Standard 14 and its legacy plugins. The flat config retains the 142 core and formatting checks from `eslint-config-standard` 14.1.0: 96 remain ESLint core rules and 46 use the corresponding Stylistic rules (`func-call-spacing` becomes `@stylistic/function-call-spacing`). ESLint's current recommended checks are also enabled. Source files retain ECMAScript 2020 parsing, with CommonJS scope and only the additional globals they use (`console` and `process`).
+
+Three option migrations preserve the old intent: `object-property-newline` uses `allowAllPropertiesOnSameLine: true` instead of its deprecated `allowMultiplePropertiesPerLine` alias; `quotes` uses `allowTemplateLiterals: 'never'` instead of `false`; and `no-inner-declarations` explicitly sets `blockScopedFunctions: 'disallow'` rather than adopting the newer permissive default.
+
+Ten legacy plugin rules are intentionally omitted rather than pulling their old dependency trees back in:
+
+- Import rules: `import/export`, `import/first`, `import/no-absolute-path`, `import/no-duplicates`, `import/no-named-default` and `import/no-webpack-loader-syntax`. The runtime and test files use CommonJS with simple explicit `require` paths and no ES-module imports or webpack loader imports. CommonJS parsing rejects ES-module import/export syntax in those files; the development-only `eslint.config.mjs` uses ES-module imports. The other import-specific policies are not enforced by the replacement.
+- Node plugin rules: `node/no-deprecated-api` and `node/process-exit-as-throw`. The existing source uses ordinary current Node APIs, and the test runner records failures with `process.exitCode`. This config does not provide the old plugin's broader deprecated-API checks or process-exit control-flow treatment.
+- Callback/promise conventions: `promise/param-names` and `standard/no-callback-literal`. There are no Promise executors or error-first callback APIs in the current source/tests. These plugin conventions are not enforced for future additions.
+
+Standard also supplied `eslint-config-standard-jsx` 8.1.0 separately. Its 24 JSX/React checks (`jsx-quotes` and 23 `react/*` rules) and JSX parsing are intentionally omitted: this package contains no JSX or React components. The 142-check mapping above concerns `eslint-config-standard` 14.1.0, not that separate JSX configuration. Add an appropriate modern JSX policy before introducing JSX source.
+
+The supported core checks remain, including `eqeqeq`, `no-eval`, `no-implied-eval`, `no-new-func`, `prefer-const`, `handle-callback-err` and `prefer-promise-reject-errors`. Revisit the documented omissions if the repository grows imports, asynchronous APIs or additional Node integration. This is an explicit policy migration, not a claim of complete Standard rule equivalence.
+
+The Yarn lockfile pins the complete development graph. Modern ESLint still uses AJV for rule-option validation and minimatch for file matching; replacing Standard does not remove those package families or establish that dependencies are free of vulnerabilities. The runtime dependency remains `circular-dependency-plugin` 5.2.0 in the lockfile.
